@@ -6,6 +6,7 @@
 //
 import SwiftUI
 import Combine
+import UserNotifications
 
 class PlantViewModel: ObservableObject {
     // البيانات
@@ -20,6 +21,11 @@ class PlantViewModel: ObservableObject {
     @Published var light: Light = .fullSun
     @Published var wateringDays: WateringDays = .everyDay
     @Published var waterAmount: Water = .small
+
+    // نطلب إذن الإشعارات أول ما ينشأ الـ ViewModel
+    init() {
+        requestPermission()
+    }
 
     // عدد النباتات اللي انسقت
     var wateredCount: Int {
@@ -71,6 +77,9 @@ class PlantViewModel: ObservableObject {
             plants[index].light = light
             plants[index].wateringDays = wateringDays
             plants[index].waterAmount = waterAmount
+
+            cancelNotification(for: plants[index])
+            scheduleNotification(for: plants[index])
         } else {
             let newPlant = Plant(
                 name: name,
@@ -81,6 +90,8 @@ class PlantViewModel: ObservableObject {
             )
             plants.append(newPlant)
             hasStarted = true
+
+            scheduleNotification(for: newPlant)
         }
         showSheet = false
     }
@@ -94,12 +105,20 @@ class PlantViewModel: ObservableObject {
     }
 
     func deletePlant(_ plant: Plant) {
+        cancelNotification(for: plant)
         plants.removeAll { $0.id == plant.id }
     }
 
     func toggleWatered(_ plant: Plant) {
         if let index = plants.firstIndex(where: { $0.id == plant.id }) {
             plants[index].isWatered.toggle()
+        }
+    }
+
+    // نرجّع كل النباتات غير مسقية
+    func resetWatered() {
+        for index in plants.indices {
+            plants[index].isWatered = false
         }
     }
 
@@ -111,5 +130,41 @@ class PlantViewModel: ObservableObject {
         light = .fullSun
         wateringDays = .everyDay
         waterAmount = .small
+    }
+
+    // MARK: - الإشعارات
+
+    // نطلب إذن إظهار الإشعارات
+    func requestPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+    }
+
+    // نجدول إشعار للنبتة
+    func scheduleNotification(for plant: Plant) {
+        let content = UNMutableNotificationContent()
+        content.title = "Planto"
+        content.body = "Hey! let's water your plant"
+        content.sound = .default
+
+       
+
+        // الأصلي (فعّليه بعد التجربة، وامسحي سطر التجربة فوق):
+         let trigger = UNTimeIntervalNotificationTrigger(
+             timeInterval: plant.wateringDays.intervalSeconds,
+             repeats: true)
+        //
+
+        let request = UNNotificationRequest(
+            identifier: plant.id.uuidString,
+            content: content,
+            trigger: trigger
+        )
+        UNUserNotificationCenter.current().add(request)
+    }
+
+    // نلغي إشعار النبتة
+    func cancelNotification(for plant: Plant) {
+        UNUserNotificationCenter.current()
+            .removePendingNotificationRequests(withIdentifiers: [plant.id.uuidString])
     }
 }

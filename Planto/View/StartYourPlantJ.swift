@@ -31,6 +31,7 @@ struct StartYourPlantJView: View {
     var body: some View {
         VStack {
             Spacer()
+                
 
             VStack(spacing: 16) {
                 Image("Plant")

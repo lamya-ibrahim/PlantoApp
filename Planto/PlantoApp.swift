@@ -3,16 +3,16 @@ import SwiftUI
 @main
 struct PlantoApp: App {
     @StateObject private var viewModel = PlantViewModel()
-
+    
     var body: some Scene {
         WindowGroup {
             ZStack {
                 Color.black
                     .ignoresSafeArea()
-
+                
                 VStack(spacing: 0) {
                     header
-
+                    
                     if viewModel.plants.isEmpty && !viewModel.hasStarted {
                         startPage
                     } else if viewModel.plants.isEmpty {
@@ -37,7 +37,7 @@ struct PlantoApp: App {
             .preferredColorScheme(.dark)
         }
     }
-
+    
     // MARK: - العنوان
     var header: some View {
         VStack(spacing: 0) {
@@ -49,35 +49,35 @@ struct PlantoApp: App {
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
                 .padding(.bottom, 12)
-
+            
             Divider()
         }
     }
-
+    
     // MARK: - صفحة البداية
     var startPage: some View {
         VStack {
             Spacer()
-
+            
             VStack(spacing: 16) {
                 Image("Plant")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 200, height: 200)
-
+                
                 Text("Start your plant journey!")
                     .font(.headline)
                     .foregroundStyle(.white)
-
+                
                 Text("Now all your plants will be in one place and we will help you take care of them :)🪴")
                     .font(.caption)
                     .foregroundStyle(.gray)
                     .multilineTextAlignment(.center)
             }
             .padding(.horizontal, 40)
-
+            
             Spacer()
-
+            
             Button {
                 viewModel.openAdd()
             } label: {
@@ -92,7 +92,7 @@ struct PlantoApp: App {
             .padding(.bottom, 100)
         }
     }
-
+    
     // MARK: - ما فيه تذكيرات
     var noRemindersPage: some View {
         Text("No reminders set yet..")
@@ -100,26 +100,30 @@ struct PlantoApp: App {
             .foregroundStyle(.gray)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-
-    // MARK: - كلها انسقت
+    
+    // MARK: - كلها انسقت (اضغطي عليها لترجع العلامات فاضية)
     var allDonePage: some View {
         VStack(spacing: 12) {
             Image("Plant")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 200, height: 200)
-
+            
             Text("All Done! 🎉")
                 .font(.headline)
                 .foregroundStyle(.white)
-
+            
             Text("All Reminders Completed")
                 .font(.caption)
                 .foregroundStyle(.gray)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            viewModel.resetWatered()
+        }
     }
-
+    
     // MARK: - قائمة النباتات
     var listPage: some View {
         VStack(spacing: 0) {
@@ -127,13 +131,13 @@ struct PlantoApp: App {
                 Text(viewModel.progressMessage)
                     .font(.footnote)
                     .foregroundStyle(.white)
-
+                
                 ProgressView(value: viewModel.progress)
                     .tint(Color("PlantGreen"))
                     .animation(.easeInOut, value: viewModel.progress)
             }
             .padding(20)
-
+            
             List {
                 ForEach(viewModel.plants) { plant in
                     plantRow(plant)
@@ -155,7 +159,7 @@ struct PlantoApp: App {
             .scrollContentBackground(.hidden)
         }
     }
-
+    
     // MARK: - صف نبتة
     func plantRow(_ plant: Plant) -> some View {
         HStack(alignment: .top, spacing: 12) {
@@ -167,7 +171,7 @@ struct PlantoApp: App {
                     .foregroundStyle(plant.isWatered ? .mint : .gray)
             }
             .buttonStyle(.plain)
-
+            
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 4) {
                     Image(systemName: "location")
@@ -175,18 +179,18 @@ struct PlantoApp: App {
                 }
                 .font(.caption2)
                 .foregroundStyle(.gray)
-
+                
                 Text(plant.name)
                     .font(.title3)
                     .foregroundStyle(plant.isWatered ? .gray : .white)
-
+                
                 HStack(spacing: 8) {
                     HStack(spacing: 4) {
                         Image(systemName: "sun.max")
                         Text(plant.light.rawValue)
                     }
                     .foregroundStyle(Color("LightColor"))
-
+                    
                     HStack(spacing: 4) {
                         Image(systemName: "drop")
                         Text(plant.waterAmount.rawValue)
@@ -195,12 +199,12 @@ struct PlantoApp: App {
                 }
                 .font(.caption2)
             }
-
+            
             Spacer()
         }
         .padding(.vertical, 8)
     }
-
+    
     // MARK: - زر +
     var plusButton: some View {
         Button {
@@ -215,7 +219,7 @@ struct PlantoApp: App {
         .padding(.trailing, 24)
         .padding(.bottom, 24)
     }
-
+    
     // MARK: - الشيت (Set Reminder)
     var setReminderSheet: some View {
         NavigationStack {
@@ -226,7 +230,7 @@ struct PlantoApp: App {
                         TextField("Pothos", text: $viewModel.name)
                     }
                 }
-
+                
                 Section {
                     Picker(selection: $viewModel.room) {
                         ForEach(Room.allCases) { item in
@@ -236,7 +240,7 @@ struct PlantoApp: App {
                         Label("Room", systemImage: "location")
                             .foregroundStyle(.white)
                     }
-
+                    
                     Picker(selection: $viewModel.light) {
                         ForEach(Light.allCases) { item in
                             Text(item.rawValue).tag(item)
@@ -246,7 +250,7 @@ struct PlantoApp: App {
                             .foregroundStyle(.white)
                     }
                 }
-
+                
                 Section {
                     Picker(selection: $viewModel.wateringDays) {
                         ForEach(WateringDays.allCases) { item in
@@ -256,7 +260,7 @@ struct PlantoApp: App {
                         Label("Watering Days", systemImage: "drop")
                             .foregroundStyle(.white)
                     }
-
+                    
                     Picker(selection: $viewModel.waterAmount) {
                         ForEach(Water.allCases) { item in
                             Text(item.rawValue).tag(item)
@@ -266,7 +270,7 @@ struct PlantoApp: App {
                             .foregroundStyle(.white)
                     }
                 }
-
+                
                 if viewModel.plantToEdit != nil {
                     Section {
                         Button(role: .destructive) {
@@ -286,7 +290,7 @@ struct PlantoApp: App {
                         viewModel.showSheet = false
                     }
                 }
-
+                
                 ToolbarItem(placement: .confirmationAction) {
                     Button(role: .confirm) {
                         viewModel.savePlant()
