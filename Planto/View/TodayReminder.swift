@@ -1,9 +1,11 @@
+
 //
 //  TodayReminder.swift
 //  Planto
 //
 //  Created by Lamya on 15/11/2026.
 //
+
 import SwiftUI
 
 // صف نبتة واحدة
@@ -12,13 +14,13 @@ struct PlantRow: View {
     let viewModel: PlantViewModel
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .center, spacing: 12) {
             Button {
                 viewModel.toggleWatered(plant)
             } label: {
                 Image(systemName: plant.isWatered ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
-                    .foregroundStyle(plant.isWatered ? .mint : .gray)
+                    .foregroundStyle(plant.isWatered ? Color("CheckColor") : .gray)
             }
             .buttonStyle(.plain)
 
@@ -39,13 +41,21 @@ struct PlantRow: View {
                         Image(systemName: "sun.max")
                         Text(plant.light.rawValue)
                     }
+                    .foregroundStyle(Color("LightColor"))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color(.secondarySystemBackground), in: Capsule())
+
                     HStack(spacing: 4) {
                         Image(systemName: "drop")
                         Text(plant.waterAmount.rawValue)
                     }
+                    .foregroundStyle(Color("Watering"))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color(.secondarySystemBackground), in: Capsule())
                 }
-                .font(.caption2)
-                .foregroundStyle(.gray)
+                .font(.system(size: 14))
             }
 
             Spacer()
@@ -62,11 +72,12 @@ struct TodayReminderView: View {
         VStack(spacing: 0) {
             VStack(spacing: 12) {
                 Text(viewModel.progressMessage)
-                    .font(.system(size: 18))
+                    .font(.footnote)
                     .foregroundStyle(.white)
 
                 ProgressView(value: viewModel.progress)
                     .tint(Color("PlantGreen"))
+                    .scaleEffect(x: 1, y: 1.5, anchor: .center) // تعديل 1: سماكة الشريط
                     .animation(.easeInOut, value: viewModel.progress)
             }
             .padding(20)
@@ -79,6 +90,7 @@ struct TodayReminderView: View {
                             viewModel.openEdit(plant)
                         }
                         .listRowBackground(Color.black)
+                        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 } // تعديل 2: الخط يبدأ من الحافة
                         .swipeActions {
                             Button(role: .destructive) {
                                 viewModel.deletePlant(plant)
@@ -89,6 +101,7 @@ struct TodayReminderView: View {
                 }
             }
             .listStyle(.plain)
+            .scrollContentBackground(.hidden)
         }
     }
 }
