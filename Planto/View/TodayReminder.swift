@@ -62,7 +62,7 @@ struct TodayReminderView: View {
         VStack(spacing: 0) {
             VStack(spacing: 12) {
                 Text(viewModel.progressMessage)
-                    .font(.footnote)
+                    .font(.system(size: 18))
                     .foregroundStyle(.white)
 
                 ProgressView(value: viewModel.progress)

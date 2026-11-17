@@ -42,8 +42,7 @@ struct PlantoApp: App {
     var header: some View {
         VStack(spacing: 0) {
             Text("My Plants 🌱")
-                .font(.largeTitle)
-                .bold()
+                .font(.system(size: 34,weight: .bold))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 20)
@@ -66,11 +65,12 @@ struct PlantoApp: App {
                     .frame(width: 200, height: 200)
                 
                 Text("Start your plant journey!")
-                    .font(.headline)
+                    .font(.system(size: 25))
+                    .bold()
                     .foregroundStyle(.white)
                 
                 Text("Now all your plants will be in one place and we will help you take care of them :)🪴")
-                    .font(.caption)
+                    .font(.system(size: 16))
                     .foregroundStyle(.gray)
                     .multilineTextAlignment(.center)
             }
@@ -86,8 +86,8 @@ struct PlantoApp: App {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(Color("PlantGreen"), in: Capsule())
             }
+            .glassEffect(.regular.tint(Color("PlantGreen")).interactive())
             .padding(.horizontal, 60)
             .padding(.bottom, 100)
         }
@@ -96,7 +96,7 @@ struct PlantoApp: App {
     // MARK: - ما فيه تذكيرات
     var noRemindersPage: some View {
         Text("No reminders set yet..")
-            .font(.caption)
+            .font(.system(size: 20))
             .foregroundStyle(.gray)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -162,16 +162,16 @@ struct PlantoApp: App {
     
     // MARK: - صف نبتة
     func plantRow(_ plant: Plant) -> some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .center, spacing: 12) {
             Button {
                 viewModel.toggleWatered(plant)
             } label: {
                 Image(systemName: plant.isWatered ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
-                    .foregroundStyle(plant.isWatered ? .mint : .gray)
+                    .foregroundStyle(plant.isWatered ? Color("CheckColor") : .gray)
             }
             .buttonStyle(.plain)
-            
+
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 4) {
                     Image(systemName: "location")
@@ -179,32 +179,37 @@ struct PlantoApp: App {
                 }
                 .font(.caption2)
                 .foregroundStyle(.gray)
-                
+
                 Text(plant.name)
                     .font(.title3)
                     .foregroundStyle(plant.isWatered ? .gray : .white)
-                
+
                 HStack(spacing: 8) {
                     HStack(spacing: 4) {
                         Image(systemName: "sun.max")
                         Text(plant.light.rawValue)
                     }
                     .foregroundStyle(Color("LightColor"))
-                    
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color(.secondarySystemBackground), in: Capsule())
+
                     HStack(spacing: 4) {
                         Image(systemName: "drop")
                         Text(plant.waterAmount.rawValue)
                     }
                     .foregroundStyle(Color("Watering"))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color(.secondarySystemBackground), in: Capsule())
                 }
-                .font(.caption2)
+                .font(.system(size: 14))
             }
-            
+
             Spacer()
         }
         .padding(.vertical, 8)
     }
-    
     // MARK: - زر +
     var plusButton: some View {
         Button {
@@ -214,12 +219,11 @@ struct PlantoApp: App {
                 .font(.title3.bold())
                 .foregroundStyle(.white)
                 .frame(width: 44, height: 44)
-                .background(Color("PlantGreen"), in: Circle())
         }
+        .glassEffect(.regular.tint(Color("PlantGreen")).interactive(), in: .circle)
         .padding(.trailing, 24)
         .padding(.bottom, 24)
     }
-    
     // MARK: - الشيت (Set Reminder)
     var setReminderSheet: some View {
         NavigationStack {

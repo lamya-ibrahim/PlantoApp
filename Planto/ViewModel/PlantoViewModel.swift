@@ -146,13 +146,13 @@ class PlantViewModel: ObservableObject {
         content.body = "Hey! let's water your plant"
         content.sound = .default
 
-       
+        let trigger = UNTimeIntervalNotificationTrigger(
+            timeInterval: plant.wateringDays.intervalSeconds,
+            repeats: true
+        )
 
-        // الأصلي (فعّليه بعد التجربة، وامسحي سطر التجربة فوق):
-         let trigger = UNTimeIntervalNotificationTrigger(
-             timeInterval: plant.wateringDays.intervalSeconds,
-             repeats: true)
-        //
+        // للتجربة: بدّليه بهذا السطر (يطلع بعد 5 ثواني)
+        // let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
 
         let request = UNNotificationRequest(
             identifier: plant.id.uuidString,
