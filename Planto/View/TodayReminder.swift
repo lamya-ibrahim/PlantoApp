@@ -33,8 +33,7 @@ struct PlantRow: View {
                 .foregroundStyle(.gray)
 
                 Text(plant.name)
-                    .font(.title3)
-                    .foregroundStyle(plant.isWatered ? .gray : .white)
+                    .font(.title3).foregroundStyle(plant.isWatered ? .gray : .white)
 
                 HStack(spacing: 8) {
                     HStack(spacing: 4) {
